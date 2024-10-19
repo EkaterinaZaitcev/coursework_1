@@ -1,11 +1,12 @@
 import datetime
-import pandas as pd
+
 from typing import List, Dict
 
+import pandas as pd
 
-def get_greetings(hour):
+def get_greetings():
     """Функция приветствия пользователя"""
-    hour = dt.datetime.now().hour
+    hour = datetime.datetime.now().hour
     if 6 <= hour < 12:
         return "Доброе утро"
     elif 12<= hour <17:
@@ -15,8 +16,8 @@ def get_greetings(hour):
     else:
         return "Доброй ночи"
 
-if __name__ == "__main__":
-    print(get_greetings("14:25"))
+"""if __name__ == "__main__":
+    print(get_greetings("12:00"))"""
 
 def get_date(date: str) -> datetime.datetime:
     """Функция преобразования даты"""
@@ -26,14 +27,19 @@ def get_date(date: str) -> datetime.datetime:
     except ValueError as i:
         raise f'Ошибка даты {i}'
 
+"""if __name__ == "__main__":
+    print(get_date("19.10.2024 14:41:12"))"""
 
-def reader_transactions_excel(file_path) -> List[Dict]:
+def reader_transactions_excel(file_operations:str) -> List[Dict]:
     """Функция принимает на вход путь до файла и возвращает словарь python"""
-    try:
-        df = pd.read_excel(file_path)
-        dict_transactions = df.to_dict(orient = "records")
-        return dict_transactions
-    except FileNotFoundError:
-        raise f'Ошибка, файл не найден'
+    with open(file_operations, 'r', encoding='utf-8'):
+        reader = pd.read_excel(file_operations)
+        header = pd.DataFrame(reader, columns=["transaction_date", "payment_date",
+                    "card_number", "status", "amount", "currency", "payment_amount",
+                    "payment_currency", "cashback", "category", "mcc", "description",
+                    "bonuses", "investment_piggy", "amount_with_rounding"])
+        result = header.to_dict('records')
+        return result
 
-
+if __name__ == "__main__":
+    print(reader_transactions_excel("..\\data\\operations.xlsx"))

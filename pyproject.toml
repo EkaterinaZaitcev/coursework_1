@@ -9,6 +9,8 @@ readme = "README.md"
 python = "^3.12"
 python-dotenv = "^1.0.1"
 pandas = "^2.2.3"
+file = "^0.3.0"
+requests = "^2.32.3"
 
 
 [tool.poetry.group.link.dependencies]

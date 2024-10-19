@@ -1,3 +1,3 @@
 from pathlib import Path
 
-file_path = str(Path(__file__).resolve().parent.parent) + "operations.xlsx"
+file_operations = str(Path(__file__).resolve().parent.parent) + "\\data\\operations.xlsx"
