@@ -1,14 +1,14 @@
 import datetime
+import datetime as dt
 import logging
 import os
-from typing import List, Dict
+from typing import Dict, List
 
-import requests
-from mypy.dmypy.client import request
-from src.conf import BASE_DIR
-from dotenv import load_dotenv
-import datetime as dt
 import pandas as pd
+import requests
+from dotenv import load_dotenv
+
+from src.conf import BASE_DIR
 
 load_dotenv("..\\.env")
 OPERATIONS_DIR = BASE_DIR.joinpath("data", "operations.xlsx")
@@ -28,15 +28,17 @@ def get_greetings():
     hour = datetime.datetime.now().hour
     if 6 <= hour < 12:
         return "Доброе утро"
-    elif 12<= hour <17:
+    elif 12 <= hour < 17:
         return "Добрый день"
-    elif 17<= hour < 22:
+    elif 17 <= hour < 22:
         return "Добрый вечер"
     else:
         return "Доброй ночи"
 
+
 """if __name__ == "__main__":
     print(get_greetings())"""
+
 
 def get_date(data: str) -> datetime.datetime:
     """Функция преобразования даты"""
@@ -49,8 +51,10 @@ def get_date(data: str) -> datetime.datetime:
         logger.error(f"Ошибка преобразования даты: {i}")
         raise {i}
 
+
 """if __name__ == "__main__":
     print(get_date("19.10.2024 14:41:12"))"""
+
 
 def reader_transactions_excel(file_path:str) -> pd.DataFrame:
     """Функция принимает на вход путь до файла и возвращает DataFrame"""
@@ -63,8 +67,10 @@ def reader_transactions_excel(file_path:str) -> pd.DataFrame:
         logger.info(f"Файл {file_path} не найден")
         raise
 
+
 """if __name__ == "__main__":
     print(reader_transactions_excel(OPERATIONS_DIR))"""
+
 
 def get_dict_transactions(file_path) -> List[Dict]:
     """Функция преобразует DataFrame в словарь Python"""
@@ -85,20 +91,22 @@ def get_dict_transactions(file_path) -> List[Dict]:
     print(get_dict_transactions(OPERATIONS_DIR))"""
 
 
-def transactions_currency(df_transactions, data) ->pd.DataFrame:
+def transactions_currency(df_transactions, data) -> pd.DataFrame:
     """Функция сортирующая расходы в интервале времени"""
     end_data = get_date(data)
     start_data = end_data.replace(day=1)
-    end_data = end_data.replace(hour=0, minute=0, second=0, microsecond=0) + dt.timedelta(days = 1)
+    end_data = end_data.replace(hour=0, minute=0, second=0) + dt.timedelta(days = 1)
     transaction_currency = df_transactions.loc[
-        (pd.to_datetime(df_transactions["Дата операции"], dayfirst=True) <= end_data) &
-        (pd.to_datetime(df_transactions["Дата операции"], dayfirst=True) >= start_data)
+        (pd.to_datetime(df_transactions["Дата операции"], dayfirst=True) <= end_data)
+        & (pd.to_datetime(df_transactions["Дата операции"], dayfirst=True) >= start_data)
     ]
     return transaction_currency
+
 
 """if __name__ == "__main__":
     transactions_currency = transactions_currency(reader_transactions_excel(OPERATIONS_DIR), "20.05.2020 11:26:33")
     print(transactions_currency)"""
+
 
 def get_currency_rates():
     """Функция показывает курсы валют"""
@@ -113,6 +121,7 @@ def get_currency_rates():
     else:
         result = response.json()
         return result
+
 
 if __name__ == "__main__":
     currency_rates = get_currency_rates()
