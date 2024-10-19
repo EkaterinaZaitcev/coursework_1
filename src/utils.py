@@ -30,16 +30,17 @@ def get_date(date: str) -> datetime.datetime:
 """if __name__ == "__main__":
     print(get_date("19.10.2024 14:41:12"))"""
 
-def reader_transactions_excel(file_operations:str) -> List[Dict]:
+def reader_transactions_excel(file_path:str) -> List[Dict]:
     """Функция принимает на вход путь до файла и возвращает словарь python"""
-    with open(file_operations, 'r', encoding='utf-8'):
-        reader = pd.read_excel(file_operations)
+    with open(file_path, 'r', encoding='utf-8'):
+        reader = pd.read_excel(file_path)
+        reader = reader.fillna('0')
         header = pd.DataFrame(reader, columns=["transaction_date", "payment_date",
                     "card_number", "status", "amount", "currency", "payment_amount",
                     "payment_currency", "cashback", "category", "mcc", "description",
                     "bonuses", "investment_piggy", "amount_with_rounding"])
-        result = header.to_dict('records')
-        return result
+        dict_transactions = header.to_dict('records')
+        return dict_transactions
 
-if __name__ == "__main__":
-    print(reader_transactions_excel("..\\data\\operations.xlsx"))
+"""if __name__ == "__main__":
+    print(reader_transactions_excel("..\\data\\operations.xlsx"))"""
