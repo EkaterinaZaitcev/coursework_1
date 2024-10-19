@@ -1,8 +1,22 @@
 import datetime
+import logging
 
 from typing import List, Dict
-
+from src.conf import BASE_DIR
+import datetime as dt
 import pandas as pd
+
+OPERATIONS_DIR = BASE_DIR.joinpath("data", "operations.xlsx")
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(filename)s - %(levelname)s - %(message)s",
+    filename="../logs/utils.log",
+    filemode="w",
+    encoding="UTF8")
+
+logger = logging.getLogger("utils")
+
 
 def get_greetings():
     """Функция приветствия пользователя"""
@@ -17,30 +31,66 @@ def get_greetings():
         return "Доброй ночи"
 
 """if __name__ == "__main__":
-    print(get_greetings("12:00"))"""
+    print(get_greetings())"""
 
-def get_date(date: str) -> datetime.datetime:
+def get_date(data: str) -> datetime.datetime:
     """Функция преобразования даты"""
+    logger.info(f"Получена строка: {data}")
     try:
-        date = datetime.datetime.strptime(date, "%d.%m.%Y %H:%M:%S")
-        return date
+        data = datetime.datetime.strptime(data, "%d.%m.%Y %H:%M:%S")
+        logger.info(f"Преобразована в объект: {data}")
+        return data
     except ValueError as i:
-        raise f'Ошибка даты {i}'
+        logger.error(f"Ошибка преобразования даты: {i}")
+        raise {i}
 
 """if __name__ == "__main__":
     print(get_date("19.10.2024 14:41:12"))"""
 
-def reader_transactions_excel(file_path:str) -> List[Dict]:
-    """Функция принимает на вход путь до файла и возвращает словарь python"""
-    with open(file_path, 'r', encoding='utf-8'):
-        reader = pd.read_excel(file_path)
-        reader = reader.fillna('0')
-        header = pd.DataFrame(reader, columns=["transaction_date", "payment_date",
-                    "card_number", "status", "amount", "currency", "payment_amount",
-                    "payment_currency", "cashback", "category", "mcc", "description",
-                    "bonuses", "investment_piggy", "amount_with_rounding"])
-        dict_transactions = header.to_dict('records')
-        return dict_transactions
+def reader_transactions_excel(file_path:str) -> pd.DataFrame:
+    """Функция принимает на вход путь до файла и возвращает DataFrame"""
+    logger.info(f"Вызвана функция reader_transactions_excel с файлом {file_path}")
+    try:
+        df_transactions = pd.read_excel(file_path)
+        logger.info(f"Функция {file_path} найден, данные прочитаны")
+        return df_transactions
+    except FileNotFoundError:
+        logger.info(f"Файл {file_path} не найден")
+        raise
 
 """if __name__ == "__main__":
-    print(reader_transactions_excel("..\\data\\operations.xlsx"))"""
+    print(reader_transactions_excel(OPERATIONS_DIR))"""
+
+def get_dict_transactions(file_path) -> List[Dict]:
+    """Функция преобразует DataFrame в словарь Python"""
+    logger.info(f"Вызвана функция get_dict_transactions с файлом {file_path}")
+    try:
+        df = pd.read_excel(file_path)
+        logger.info(f"Файл {file_path} прочитан")
+        df = df.fillna('')
+        dict_transactions = df.to_dict('records')
+        logger.info(f"Файл {file_path} преобразован")
+        return dict_transactions
+    except FileNotFoundError:
+        logger.error(f"Файл {file_path} не найден")
+        raise
+
+
+"""if __name__ == "__main__":
+    print(get_dict_transactions(OPERATIONS_DIR))"""
+
+
+def transactions_currency(df_transactions, data) ->pd.DataFrame:
+    """Функция сортирующая расходы в интервале времени"""
+    end_data = get_date(data)
+    start_data = end_data.replace(day=1)
+    end_data = end_data.replace(hour=0, minute=0, second=0, microsecond=0) + dt.timedelta(days = 1)
+    transaction_currency = df_transactions.loc[
+        (pd.to_datetime(df_transactions["Дата операции"], dayfirst=True) <= end_data) &
+        (pd.to_datetime(df_transactions["Дата операции"], dayfirst=True) >= start_data)
+    ]
+    return transaction_currency
+
+if __name__ == "__main__":
+    transactions_currency = transactions_currency(reader_transactions_excel(OPERATIONS_DIR), "20.05.2020 11:26:33")
+    print(transactions_currency)

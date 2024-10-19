@@ -348,6 +348,20 @@ files = [
 toml = ["tomli"]
 
 [[package]]
+name = "dt"
+version = "1.1.65"
+description = "Dynatrace API Python client"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "dt-1.1.65-py3-none-any.whl", hash = "sha256:b40f9f549077e59ae1609a4f4f033b1bf593bcb832da40d08efaaaa231e8eeed"},
+    {file = "dt-1.1.65.tar.gz", hash = "sha256:ff7fce6b9d5039b0bc1d20dc6d74e3fe3986f6a46a503ec0fcae7df15032ec49"},
+]
+
+[package.dependencies]
+requests = ">=2.22"
+
+[[package]]
 name = "file"
 version = "0.3.0"
 description = "CFFI bindings for libmagic."
@@ -869,4 +883,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "e479678b7c166b007fa04091e304d14532eff58c892c2802041d6a0ea2139a8d"
+content-hash = "dfca96ee66720dea952afc008c9a75bffcd4aa906e30497cb2bf77728df7da4e"

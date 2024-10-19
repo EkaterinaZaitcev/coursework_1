@@ -1,7 +1,7 @@
 from src.utils import get_greetings
 
 
-def main(get_date, reader_transactions_excel):
+def main():
     greetings = get_greetings()
     pass
 
