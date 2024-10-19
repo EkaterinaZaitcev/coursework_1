@@ -1,4 +1,7 @@
 import datetime
+import pandas as pd
+from typing import List, Dict
+
 
 def get_date(date: str) -> datetime.datetime:
     """Функция преобразования даты"""
@@ -9,6 +12,9 @@ def get_date(date: str) -> datetime.datetime:
         raise f'Ошибка даты {i}'
 
 
-def reader_transactions_excel(file_path) -> :
-    """Функция принимает на вход путь до файла и возвращает JSON-ответ"""
+def reader_transactions_excel(file_path) -> List[Dict]:
+    """Функция принимает на вход путь до файла и возвращает словарь python"""
+    df = pd.read_excel(file_path)
+    dict_transactions = 
+
 
