@@ -1,11 +1,16 @@
 import datetime
 import logging
-
+import os
 from typing import List, Dict
+
+import requests
+from mypy.dmypy.client import request
 from src.conf import BASE_DIR
+from dotenv import load_dotenv
 import datetime as dt
 import pandas as pd
 
+load_dotenv("..\\.env")
 OPERATIONS_DIR = BASE_DIR.joinpath("data", "operations.xlsx")
 
 logging.basicConfig(
@@ -91,6 +96,24 @@ def transactions_currency(df_transactions, data) ->pd.DataFrame:
     ]
     return transaction_currency
 
-if __name__ == "__main__":
+"""if __name__ == "__main__":
     transactions_currency = transactions_currency(reader_transactions_excel(OPERATIONS_DIR), "20.05.2020 11:26:33")
-    print(transactions_currency)
+    print(transactions_currency)"""
+
+def get_currency_rates():
+    """Функция показывает курсы валют"""
+    logger.info("Вызвана функция get_currency_rates")
+    API_KEY = os.environ.get("API_KEY")
+    url = f"https://api.apilayer.com/exchangerates_data/latest?base=RUB&symbols=USD,EUR"
+    headers = {"apikey": API_KEY}
+    response = requests.get(url, headers=headers)
+    status_code = response.status_code
+    if status_code != 200:
+        print(f"Запрос отклонен.{status_code}")
+    else:
+        result = response.json()
+        return result
+
+if __name__ == "__main__":
+    currency_rates = get_currency_rates()
+    print(currency_rates)
