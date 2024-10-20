@@ -22,7 +22,7 @@ def get_transactions_people(dict_transactions: List[Dict], pattern):
     logger.info("Вызвана функция get_transactions_people")
     list_transactions = []
     for trans in dict_transactions:
-        if "description" in trans and re.match(pattern, trans["description"]):
+        if "Описание" in trans and re.match(pattern, trans["Описание"]):
             list_transactions.append(trans)
     logger.info(f"Найдено {len(list_transactions)} транзакций, соответствующих паттерну")
     if list_transactions:

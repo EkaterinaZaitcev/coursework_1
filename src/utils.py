@@ -49,7 +49,7 @@ def get_date(data: str) -> datetime.datetime:
         return data
     except ValueError as i:
         logger.error(f"Ошибка преобразования даты: {i}")
-        raise {i}
+        raise i
 
 
 """if __name__ == "__main__":
