@@ -123,6 +123,26 @@ def get_currency_rates():
         return result
 
 
-if __name__ == "__main__":
+"""if __name__ == "__main__":
     currency_rates = get_currency_rates()
-    print(currency_rates)
+    print(currency_rates)"""
+
+
+def get_stock_price():
+    """Функция показывает курс акций"""
+    logger.info("Вызвана функция get_currency_rates")
+    access_key = os.environ.get("access_key")
+    url = f"http://api.marketstack.com/v1/eod?access_key={access_key}&symbols=AAPL,NVDA,MSFT,GOOG,AMZN"
+    headers = {"apikey": access_key}
+    response = requests.get(url, headers=headers)
+    status_code = response.status_code
+    if status_code != 200:
+        print(f"Запрос отклонен.{status_code}")
+    else:
+        result = response.json()
+        return result
+
+
+"""if __name__ == "__main__":
+    stock_price = get_stock_price()
+    print(stock_price)"""
