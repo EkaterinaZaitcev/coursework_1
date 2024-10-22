@@ -64,5 +64,3 @@ def test_reader_transactions_excel():
         reader_transactions_excel("..\\data\\transactions.xlsx")
 
 
-def test_transactions_currency():
-    """Тест сортировки транзакций в интервале времени"""
