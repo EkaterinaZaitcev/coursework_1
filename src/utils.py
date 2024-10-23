@@ -1,10 +1,11 @@
 import datetime
 import datetime as dt
+import json
 import logging
 import os
-from locale import currency
-from typing import Dict, List
 
+from typing import Dict, List
+from pathlib import Path
 import pandas as pd
 import requests
 from dotenv import load_dotenv
@@ -12,6 +13,7 @@ from dotenv import load_dotenv
 from src.conf import BASE_DIR
 
 load_dotenv("..\\.env")
+
 OPERATIONS_DIR = BASE_DIR.joinpath("data", "operations.xlsx")
 
 logging.basicConfig(
@@ -57,15 +59,15 @@ def get_date(data: str) -> datetime.datetime:
     print(get_date("19.10.2024 14:41:12"))"""
 
 
-def reader_transactions_excel(file_path:str) -> pd.DataFrame:
+def reader_transactions_excel(path:str|Path) -> pd.DataFrame:
     """Функция принимает на вход путь до файла и возвращает DataFrame"""
-    logger.info(f"Вызвана функция reader_transactions_excel с файлом {file_path}")
+    logger.info(f"Вызвана функция reader_transactions_excel с файлом {path}")
     try:
-        df_transactions = pd.read_excel(file_path)
-        logger.info(f"Функция {file_path} найден, данные прочитаны")
+        df_transactions = pd.read_excel(path)
+        logger.info(f"Функция {path} найден, данные прочитаны")
         return df_transactions
     except FileNotFoundError:
-        logger.info(f"Файл {file_path} не найден")
+        logger.info(f"Файл {path} не найден")
         raise
 
 
@@ -73,18 +75,18 @@ def reader_transactions_excel(file_path:str) -> pd.DataFrame:
     print(reader_transactions_excel(OPERATIONS_DIR))"""
 
 
-def get_dict_transactions(file_path) -> List[Dict]:
+def get_dict_transactions(path) -> List[Dict]:
     """Функция преобразует DataFrame в словарь Python"""
-    logger.info(f"Вызвана функция get_dict_transactions с файлом {file_path}")
+    logger.info(f"Вызвана функция get_dict_transactions с файлом {path}")
     try:
-        df = pd.read_excel(file_path)
-        logger.info(f"Файл {file_path} прочитан")
+        df = pd.read_excel(path)
+        logger.info(f"Файл {path} прочитан")
         df = df.fillna('')
         dict_transactions = df.to_dict('records')
-        logger.info(f"Файл {file_path} преобразован")
+        logger.info(f"Файл {path} преобразован")
         return dict_transactions
     except FileNotFoundError:
-        logger.error(f"Файл {file_path} не найден")
+        logger.error(f"Файл {path} не найден")
         raise
 
 
@@ -161,7 +163,7 @@ def get_card_expenses(df_transactions):
     card_expenses = []
     for card, expenses in card_dict.items():
         card_expenses.append(
-            {"Последняя операция":card, "Всего расходов":abs(expenses), "Кэшбэк":abs(round(expenses/100,2))}
+            {"last_digits":card[-4:], "total_spent":abs(expenses), "cashback":abs(round(expenses/100,2))}
         )
         logging.info("Завершение выполнения функции")
         return card_expenses
@@ -170,3 +172,32 @@ def get_card_expenses(df_transactions):
 """if __name__=="__main__":
     result_card_expenses = get_card_expenses(reader_transactions_excel(str(OPERATIONS_DIR)))
     print (result_card_expenses)"""
+
+
+def top_transactions(df_transactions):
+    """Функция, выводит топ-5 транзакций по сумме платежа"""
+    logging.info("Начало работы функции top_transactions")
+    top_transaction = df_transactions.sort_values(by="Сумма платежа", ascending=True).iloc[:5]
+    logger.info("Получен топ 5 транзакций по сумме платежа")
+    result_top_transaction = top_transaction.to_dict(orient="records")
+    top_transaction_list = []
+    for transaction in result_top_transaction:
+        top_transaction_list.append(
+            {
+                "date": str(
+                    (datetime.datetime.strptime(transaction["Дата операции"], "%d.%m.%Y %H:%M:%S"))
+                    .date()
+                    .strftime("%d.%m.%Y")
+                ).replace("-", "."),
+                "amount": transaction["Сумма платежа"],
+                "category": transaction["Категория"],
+                "description": transaction["Описание"],
+            }
+        )
+    logger.info("Сформирован список топ 5 транзакций")
+    return top_transaction_list
+
+
+"""if __name__=="__main__":
+    top_transaction_list = top_transactions(reader_transactions_excel(OPERATIONS_DIR))
+    print(top_transaction_list)"""
