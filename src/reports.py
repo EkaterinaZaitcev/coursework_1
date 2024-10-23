@@ -1,9 +1,6 @@
 import datetime
 import datetime as dt
 import logging
-
-
-import data
 import pandas as pd
 
 from src.conf import BASE_DIR
@@ -34,10 +31,11 @@ def get_spending_by_category(df_transactions:pd.DataFrame, category:str, date:[s
         &(pd.to_datetime(df_transactions["Дата операции"], dayfirst=True)>=start_date)
     &(df_transactions["Категория"]==category)
     ]
+    logger.info(f"Возвращены транзакции за три месяца по категории")
     return transactions_by_category
 
 
 if __name__ =="__main__":
     result = get_spending_by_category(reader_transactions_excel(OPERATIONS_DIR),
-                                      "Аптеки", "19.11.2021 18:35:32")
+                                      "Супермаркеты", "19.11.2021 18:54:29")
     print(result)
