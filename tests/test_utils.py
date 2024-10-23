@@ -1,12 +1,10 @@
+from unittest import mock
 from unittest.mock import patch
-
 import datetime
 import datetime as dt
-
-import pandas as pd
 import pytest
 
-from src.utils import get_greetings, get_date, reader_transactions_excel
+from src.utils import get_greetings, get_date, reader_transactions_excel, get_card_expenses, get_currency_rates
 
 
 def test_get_greetings_morning():
@@ -64,3 +62,45 @@ def test_reader_transactions_excel():
         reader_transactions_excel("..\\data\\transactions.xlsx")
 
 
+def test_get_card_expenses(sample_transaction):
+    result = get_card_expenses(sample_transaction)
+
+    assert result[0] == {"Последняя операция":"*1112", "Всего расходов":100, "Кэшбэк":1.0}
+    #assert result[1] == {"Последняя операция":"*5091", "Всего расходов":200, "Кэшбэк":2.0}
+
+
+@patch("src.utils.requests.get")
+@patch("src.utils.os.environ.get")
+def test_get_currency_rates_success(mock_get_env, mock_get):
+    mock_get_env.return_value = "test_api_key"
+
+    mock_response = mock.Mock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"quotes":{"USDRUB":91.04, "USDEUR":0.81}}
+    mock_get.return_value=mock_response
+
+    currencies = ["RUB", "EUR"]
+    result = get_currency_rates(currencies)
+    expected_result = [{"currency":"USD", "rate":91.04},
+                       {"currency":"EUR", "rate":round(91.04/0.81, 2)}]
+    assertEqual(result, expected_result)
+    mock_get.assert_called_onse_with("https://api.apilayer.com/exchangerates_data/latest?base=RUB&symbols=USD,EUR",
+                                     headers={"apikey":"test_api_key"})
+
+
+@patch("src.utils.request.get")
+@patch("src.utils.os.environ.get")
+def test_get_currency_rates_failure(mock_get_env, mock_get, assertIsNone=None):
+    """Тест на ошибку курса валют"""
+    mock_get_env.return_value="test_api_key"
+
+    mock_response=mock.Mock()
+    mock_response.status_code=500
+    mock_response.reason="Internal Server Error"
+    mock_get.return_value=mock_response
+
+    currencies=["RUB", "EUR"]
+    result=get_currency_rates(currencies)
+    assertIsNone(result)
+    mock_get.assert_called_once_with("https://api.apilayer.com/exchangerates_data/latest?base=RUB&symbols=USD,EUR",
+                                     headers={"apikey":"test_api_key"})

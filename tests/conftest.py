@@ -56,3 +56,7 @@ def operation_data():
     return df
 
 
+@pytest.fixture
+def sample_transaction():
+    return pd.DataFrame({"Номер карты":["*1112", "*5091"], "Сумма платежа":[-100, -200]})
+

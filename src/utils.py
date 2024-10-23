@@ -2,6 +2,7 @@ import datetime
 import datetime as dt
 import logging
 import os
+from locale import currency
 from typing import Dict, List
 
 import pandas as pd
@@ -108,23 +109,26 @@ def transactions_currency(df_transactions, data) -> pd.DataFrame:
     print(transactions_currency)"""
 
 
-def get_currency_rates():
+def get_currency_rates(currencies):
     """Функция показывает курсы валют"""
     logger.info("Вызвана функция get_currency_rates")
+    to='RUB'
+    amount = 1
     API_KEY = os.environ.get("API_KEY")
-    url = f"https://api.apilayer.com/exchangerates_data/latest?base=RUB&symbols=USD,EUR"
+    url = f"https://api.apilayer.com/currency_data/convert?to={to}&from={currencies}&amount={amount}"
     headers = {"apikey": API_KEY}
     response = requests.get(url, headers=headers)
     status_code = response.status_code
     if status_code != 200:
         print(f"Запрос отклонен.{status_code}")
     else:
+
         result = response.json()
         return result
 
 
 """if __name__ == "__main__":
-    currency_rates = get_currency_rates()
+    currency_rates = get_currency_rates("EUR")
     print(currency_rates)"""
 
 
@@ -146,3 +150,23 @@ def get_stock_price():
 """if __name__ == "__main__":
     stock_price = get_stock_price()
     print(stock_price)"""
+
+
+def get_card_expenses(df_transactions):
+    """Функция возвращает расходы по картам"""
+    logger.info("Вызвана функция get_card_expenses")
+    card_dict = (df_transactions.loc[df_transactions["Сумма платежа"]<0]
+                 .groupby(by='Номер карты').agg("Сумма платежа").sum().to_dict())
+    logger.debug("Возвращен словарь расходов по картам")
+    card_expenses = []
+    for card, expenses in card_dict.items():
+        card_expenses.append(
+            {"Последняя операция":card, "Всего расходов":abs(expenses), "Кэшбэк":abs(round(expenses/100,2))}
+        )
+        logging.info("Завершение выполнения функции")
+        return card_expenses
+
+
+"""if __name__=="__main__":
+    result_card_expenses = get_card_expenses(reader_transactions_excel(str(OPERATIONS_DIR)))
+    print (result_card_expenses)"""
