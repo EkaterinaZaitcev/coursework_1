@@ -32,9 +32,3 @@ def get_transactions_people(dict_transactions: List[Dict], pattern):
     else:
         logger.info(f"Возвращен пустой список")
         return "[]"
-
-if __name__ == "__main__":
-    list_transactions_json = get_transactions_people(
-        reader_transactions_excel(OPERATIONS_DIR), pattern=r"\b[А-Я][а-я]+\s[А-Я]\."
-    )
-    print(list_transactions_json)

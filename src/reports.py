@@ -33,9 +33,3 @@ def get_spending_by_category(df_transactions:pd.DataFrame, category:str, date:[s
     ]
     logger.info(f"Возвращены транзакции за три месяца по категории")
     return transactions_by_category
-
-
-if __name__ =="__main__":
-    result = get_spending_by_category(reader_transactions_excel(OPERATIONS_DIR),
-                                      "Супермаркеты", "19.11.2021 18:54:29")
-    print(result)

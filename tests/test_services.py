@@ -3,7 +3,6 @@ import json
 from src.services import get_transactions_people
 
 
-
 def test_get_transactions_people(dict_transactions):
     """Тест проверки операций физлицам"""
     pattern = r"Константин Л."

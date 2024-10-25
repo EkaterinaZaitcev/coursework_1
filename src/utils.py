@@ -39,10 +39,6 @@ def get_greetings():
         return "Доброй ночи"
 
 
-"""if __name__ == "__main__":
-    print(get_greetings())"""
-
-
 def get_date(data: str) -> datetime.datetime:
     """Функция преобразования даты"""
     logger.info(f"Получена строка: {data}")
@@ -55,10 +51,6 @@ def get_date(data: str) -> datetime.datetime:
         raise i
 
 
-"""if __name__ == "__main__":
-    print(get_date("19.10.2024 14:41:12"))"""
-
-
 def reader_transactions_excel(path:str|Path) -> pd.DataFrame:
     """Функция принимает на вход путь до файла и возвращает DataFrame"""
     logger.info(f"Вызвана функция reader_transactions_excel с файлом {path}")
@@ -69,10 +61,6 @@ def reader_transactions_excel(path:str|Path) -> pd.DataFrame:
     except FileNotFoundError:
         logger.info(f"Файл {path} не найден")
         raise
-
-
-"""if __name__ == "__main__":
-    print(reader_transactions_excel(OPERATIONS_DIR))"""
 
 
 def get_dict_transactions(path) -> List[Dict]:
@@ -90,10 +78,6 @@ def get_dict_transactions(path) -> List[Dict]:
         raise
 
 
-"""if __name__ == "__main__":
-    print(get_dict_transactions(OPERATIONS_DIR))"""
-
-
 def transactions_currency(df_transactions, data) -> pd.DataFrame:
     """Функция сортирующая расходы в интервале времени"""
     end_data = get_date(data)
@@ -104,11 +88,6 @@ def transactions_currency(df_transactions, data) -> pd.DataFrame:
         & (pd.to_datetime(df_transactions["Дата операции"], dayfirst=True) >= start_data)
     ]
     return transaction_currency
-
-
-"""if __name__ == "__main__":
-    transactions_currency = transactions_currency(reader_transactions_excel(OPERATIONS_DIR), "20.05.2020 11:26:33")
-    print(transactions_currency)"""
 
 
 def get_currency_rates(currencies):
@@ -129,11 +108,6 @@ def get_currency_rates(currencies):
         return result
 
 
-"""if __name__ == "__main__":
-    currency_rates = get_currency_rates("EUR")
-    print(currency_rates)"""
-
-
 def get_stock_price():
     """Функция показывает курс акций"""
     logger.info("Вызвана функция get_currency_rates")
@@ -149,11 +123,6 @@ def get_stock_price():
         return result
 
 
-"""if __name__ == "__main__":
-    stock_price = get_stock_price()
-    print(stock_price)"""
-
-
 def get_card_expenses(df_transactions):
     """Функция возвращает расходы по картам"""
     logger.info("Вызвана функция get_card_expenses")
@@ -167,11 +136,6 @@ def get_card_expenses(df_transactions):
         )
         logging.info("Завершение выполнения функции")
         return card_expenses
-
-
-"""if __name__=="__main__":
-    result_card_expenses = get_card_expenses(reader_transactions_excel(str(OPERATIONS_DIR)))
-    print (result_card_expenses)"""
 
 
 def top_transactions(df_transactions):
@@ -196,8 +160,3 @@ def top_transactions(df_transactions):
         )
     logger.info("Сформирован список топ 5 транзакций")
     return top_transaction_list
-
-
-"""if __name__=="__main__":
-    top_transaction_list = top_transactions(reader_transactions_excel(OPERATIONS_DIR))
-    print(top_transaction_list)"""
