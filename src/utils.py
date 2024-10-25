@@ -39,18 +39,6 @@ def get_greetings():
         return "Доброй ночи"
 
 
-def get_date(data: str) -> datetime.datetime:
-    """Функция преобразования даты"""
-    logger.info(f"Получена строка: {data}")
-    try:
-        data = datetime.datetime.strptime(data, "%d.%m.%Y %H:%M:%S")
-        logger.info(f"Преобразована в объект: {data}")
-        return data
-    except ValueError as i:
-        logger.error(f"Ошибка преобразования даты: {i}")
-        raise i
-
-
 def reader_transactions_excel(path:str|Path) -> pd.DataFrame:
     """Функция принимает на вход путь до файла и возвращает DataFrame"""
     logger.info(f"Вызвана функция reader_transactions_excel с файлом {path}")
